@@ -8,16 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      special_ability: {
+      specialAbility: {
         type: Sequelize.INTEGER,
       },
-      youth_training_skill: {
+      youthTrainingSkill: {
         type: Sequelize.INTEGER,
       },
-      senior_training_skill: {
+      seniorTrainingSkill: {
         type: Sequelize.INTEGER,
       },
-      image_url: {
+      imageUrl: {
         type: Sequelize.STRING,
       },
       price: {

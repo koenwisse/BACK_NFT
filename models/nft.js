@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class nft extends Model {
     /**
@@ -10,18 +8,22 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      nft.belongsTo(models.user);
     }
-  };
-  nft.init({
-    special_ability: DataTypes.INTEGER,
-    youth_training_skill: DataTypes.INTEGER,
-    senior_training_skill: DataTypes.INTEGER,
-    image_url: DataTypes.STRING,
-    price: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'nft',
-  });
+  }
+  nft.init(
+    {
+      specialAbility: DataTypes.INTEGER,
+      youthTrainingSkill: DataTypes.INTEGER,
+      seniorTrainingSkill: DataTypes.INTEGER,
+      imageUrl: DataTypes.STRING,
+      price: DataTypes.INTEGER,
+      userId: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "nft",
+    }
+  );
   return nft;
 };
