@@ -23,6 +23,9 @@ module.exports = {
       price: {
         type: Sequelize.INTEGER,
       },
+      offer: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

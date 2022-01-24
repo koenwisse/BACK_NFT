@@ -3,6 +3,7 @@ const sequelize = require("sequelize");
 const auth = require("../auth/middleware");
 const Nft = require("../models").nft;
 const User = require("../models").user;
+const Purchase = require("../models").purchase;
 // const { SALT_ROUNDS } = require("../config/constants");
 // const authMiddleware = require("../auth/middleware");
 
@@ -58,12 +59,68 @@ router.post("/", auth, async (req, res, next) => {
       userId,
     });
     // we also want to send a message to the frontend and show what is posted in the frontend
-    return res.status(201).send({ message: "nft created", nft: nft });
+    return res.status(201).send({ message: "nft created", Nft: Nft });
   } catch (e) {
     next(e);
   }
 });
 
-// see more button -->
+router.post("/:id/offers", async (req, res, next) => {
+  try {
+    // data is coming from the body as we get it from the frontend form
+    // we read the nftId from the URL (:id parameter) and store it as an integer in the nftId variable:
+    const nftId = req.params.id;
+    // what are we going to create in DB:
+    const { offer, buyerId, isSold } = req.body;
+    console.log("params", req.params);
+    console.log("body", req.body);
+
+    const updatedNft = await Nft.findByPk(nftId, {
+      // include: [purchase],
+    });
+    const price = Nft.price;
+    console.log({ nftId, updatedNft, Purchase, price });
+
+    // write if statements to decide when to create
+    if (true) {
+      // We need to validate first but under the right circumstances create an offer in DB
+      const newOffer = await Nft.offer.create({
+        offer,
+      });
+      // console.log(newOffer);
+      updatedNft.offer.push(newOffer);
+
+      // and under the right circumstances create a purchase
+
+      const newPurchase = await Purchase.create({
+        // comes from url
+        nftId,
+        // declare those above
+        sellerId,
+        buyerId,
+        isSold: true,
+      });
+      // console.log("newPurchase", newPurchase);
+      updatedOffer.purchase.push(newPurchase);
+      // I need to send a response to frontend
+      res.send({
+        // send the updated artwork back to the frontend
+        nft: updatedNft,
+        // set success on true
+        success: true,
+        // we dont send an error message back so error can be null
+        error: null,
+      });
+    } else {
+      res.status(400).send({
+        nft: updatedNft, // `updatedNft` is actually not updated in this case!
+        success: false,
+        error: "the offer is not high enough",
+      });
+    }
+  } catch (e) {
+    next(e);
+  }
+});
 
 module.exports = router;

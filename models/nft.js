@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       nft.belongsTo(models.user);
+      nft.belongsToMany(models.user, {
+        through: "purchase",
+        foreignKey: "nftId",
+      });
     }
   }
   nft.init(
@@ -18,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       seniorTrainingSkill: DataTypes.INTEGER,
       imageUrl: DataTypes.STRING,
       price: DataTypes.INTEGER,
+      offer: DataTypes.INTEGER,
       userId: DataTypes.STRING,
     },
     {
