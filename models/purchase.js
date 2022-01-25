@@ -8,10 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      //  User.belongsTo(UserRole, {as: 'role'}); // Adds roleId to user rather than userRoleId
-
-      purchase.belongsTo(models.nft);
       purchase.belongsTo(models.user);
+      // purchase.hasMany(models.nft);
     }
   }
   purchase.init(
@@ -20,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       buyerId: DataTypes.INTEGER,
       sellerId: DataTypes.INTEGER,
       isSold: DataTypes.BOOLEAN,
+      offer: DataTypes.INTEGER,
     },
     {
       sequelize,

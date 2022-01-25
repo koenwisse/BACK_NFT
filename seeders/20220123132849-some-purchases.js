@@ -10,6 +10,7 @@ module.exports = {
         buyerId: 1,
         sellerId: 1,
         isSold: true,
+        offer: 1000,
       },
     ]);
   },

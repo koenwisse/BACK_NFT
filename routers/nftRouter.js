@@ -64,32 +64,32 @@ router.post("/", auth, async (req, res, next) => {
     next(e);
   }
 });
-
+// middleware puts full user Object from frontend to backend in req.user
 router.post("/:id/offers", async (req, res, next) => {
   try {
     // data is coming from the body as we get it from the frontend form
     // we read the nftId from the URL (:id parameter) and store it as an integer in the nftId variable:
     const nftId = req.params.id;
     // what are we going to create in DB:
-    const { offer, buyerId, isSold } = req.body;
+    const {
+      offer,
+      // buyer id comes from auth middleware (req.user.id)
+      buyerId,
+    } = req.body;
     console.log("params", req.params);
     console.log("body", req.body);
 
     const updatedNft = await Nft.findByPk(nftId, {
       // include: [purchase],
     });
-    const price = Nft.price;
+    // comes from DB (findbyPk) see above const decla
+    const price = updatedNft.price;
     console.log({ nftId, updatedNft, Purchase, price });
 
     // write if statements to decide when to create
-    if (true) {
+    // AND because we need to check if offer >= price and we need to have a as a condition purchaseId is null which ensures that nft not sold yet
+    if (offer >= price && updatedNft.purchaseId === null) {
       // We need to validate first but under the right circumstances create an offer in DB
-      const newOffer = await Nft.offer.create({
-        offer,
-      });
-      // console.log(newOffer);
-      updatedNft.offer.push(newOffer);
-
       // and under the right circumstances create a purchase
 
       const newPurchase = await Purchase.create({
@@ -99,12 +99,13 @@ router.post("/:id/offers", async (req, res, next) => {
         sellerId,
         buyerId,
         isSold: true,
+        offer,
       });
-      // console.log("newPurchase", newPurchase);
-      updatedOffer.purchase.push(newPurchase);
+      updatedNft.purchaseId = newPurchase.id;
+      updatedNft.save();
       // I need to send a response to frontend
       res.send({
-        // send the updated artwork back to the frontend
+        // send the updated nft back to the frontend
         nft: updatedNft,
         // set success on true
         success: true,
