@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       nft.belongsTo(models.user);
 
       nft.belongsToMany(models.user, {
-        through: "purchase",
+        through: "purchases",
         foreignKey: "nftId",
       });
       // nft.belongsTo(models.purchase);
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       imageUrl: DataTypes.STRING,
       price: DataTypes.INTEGER,
       userId: DataTypes.STRING,
-      purchaseId: DataTypes.STRING,
+      // purchaseId: DataTypes.STRING,
     },
     {
       sequelize,

@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       user.hasMany(models.nft);
       user.belongsToMany(models.nft, {
-        through: "purchase",
+        through: "purchases",
         foreignKey: "sellerId",
       });
       user.belongsToMany(models.nft, {
-        through: "purchase",
+        through: "purchases",
         foreignKey: "buyerId",
       });
     }
