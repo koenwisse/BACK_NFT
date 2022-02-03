@@ -66,7 +66,7 @@ router.post("/:id/offers", auth, async (req, res, next) => {
     // data is coming from the body as we get it from the frontend form
     // we read the nftId from the URL (:id parameter) and store it as an integer in the nftId variable --> its the nftId that comes from the frontend
     const nftId = req.params.id;
-    // console.log("nftId", nftId);
+    console.log("nftId", nftId);
     // add buyerId later as soon as auth in between, now hardcode
     const buyerId = req.user.id;
 
@@ -136,6 +136,37 @@ router.post("/:id/offers", auth, async (req, res, next) => {
         error: "the offer is not high enough",
       });
     }
+  } catch (e) {
+    next(e);
+  }
+});
+
+// GET nft by id
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  // if input is not a number (boolean, string, object, etc.) return error
+  console.log(id);
+  // if (isNaN(parseInt(id))) {
+  //   return res.status(400).send({ message: "Nft id is not a number" });
+  // }
+
+  const nft = await Nft.findByPk(id, {});
+
+  // if (nft === null) {
+  //   return res.status(404).send({ message: "Nft not found" });
+  // }
+
+  res.status(200).send({ message: "ok", nft });
+});
+
+router.get("/purchases/", async (req, res, next) => {
+  // try and catch so that we can catch the error if something wrong with api
+  try {
+    // declare var nfts that hold all nfts that comes from your our nfts "Model"
+    const purchases = await Purchases.findAll();
+    // send the nfts (array with objects) from endpoint
+    res.status(200).send({ message: "ok", purchases });
+    // we log the value of the property with name users from the object to console
   } catch (e) {
     next(e);
   }
