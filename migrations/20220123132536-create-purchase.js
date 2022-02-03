@@ -10,6 +10,8 @@ module.exports = {
       },
       isSold: {
         type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
@@ -21,6 +23,7 @@ module.exports = {
       },
       offer: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
     });
   },

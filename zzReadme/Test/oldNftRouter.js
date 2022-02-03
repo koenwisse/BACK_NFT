@@ -9,7 +9,7 @@ const Purchase = require("../models").purchase;
 
 const router = new Router();
 
-//F1: GET all NFT's
+//F1 Endpoint
 
 router.get("/", async (req, res, next) => {
   // try and catch so that we can catch the error if something wrong with api
@@ -24,7 +24,12 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// F4: POST NFT
+// ENDPOINT FOR F4
+// We need to create a new entry in our DB --> post
+// User to POST a new nft to purchase with corresponding seller/user `id`
+// await/async because we do a DB call and answer can come later
+// auth we need because we want to put the auth middleware in between BE and FE to be able to
+// control that the useer needs to be signed and we also want to get tthe userid from the auth middleware
 router.post("/", auth, async (req, res, next) => {
   try {
     // clg to check which user is logged in, put first to check if try works (debugging)
@@ -60,50 +65,42 @@ router.post("/", auth, async (req, res, next) => {
   }
 });
 // middleware puts full user Object from frontend to backend in req.user
-// auth,
-router.post("/:id/offers", auth, async (req, res, next) => {
+router.post("/:id/offers", async (req, res, next) => {
   try {
     // data is coming from the body as we get it from the frontend form
     // we read the nftId from the URL (:id parameter) and store it as an integer in the nftId variable --> its the nftId that comes from the frontend
     const nftId = req.params.id;
-    // console.log("nftId", nftId);
-    // add buyerId later as soon as auth in between, now hardcode
-    const buyerId = req.user.id;
-
-    // const buyerId = 1;
     // what are we going to create in DB:
     const {
       offer,
       // buyer id comes from auth middleware (req.user.id)
-      // userId,
-      // buyerId,
+      userId,
+      buyerId,
     } = req.body;
-    // console.log("nftId", nftId);
-    // console.log("buyerId", buyerId);
-    // console.log("offer", offer);
-    // console.log("params", req.params.id);
-    // console.log("body", req.body);
-    // find NFT by primary key and store in var so that we can use those values
+    console.log("userId", userId);
+    console.log("buyerId", buyerId);
+    console.log("offer", offer);
+    console.log("params", req.params);
+    console.log("body", req.body);
+    // find NFT by primary key and stre in var so that we can use those values
     const updatedNft = await Nft.findByPk(nftId, {
-      // add purchase array
       // include: [Purchase],
     });
-
-    // comes from DB (Nft.findbyPk) see above const
-    const sellerId = updatedNft.userId;
+    const newPurchase = await Purchase.findByPk(nftId, {
+      // include: [Purchase],
+    });
+    // comes from DB (findbyPk) see above const decla
     const price = updatedNft.price;
-    // console.log("nftId", nftId);
-    // console.log("updatedNft", updatedNft);
+    console.log("nftId", nftId);
+    console.log("updatedNft", updatedNft);
 
-    // console.log("Purchase", Purchase);
-    // console.log("price", price);
+    console.log("Purchase", Purchase);
+    console.log("price", price);
+    console.log("newPurchase", newPurchase);
 
     // write if statements to decide when to create
     // AND because we need to check if offer >= price and we need to have a as a condition purchaseId is null which ensures that nft not sold yet
-    if (
-      offer >= price
-      //  && updatedNft.purchaseId === null
-    ) {
+    if (offer >= price && updatedNft.purchaseId === null) {
       // We need to validate first but under the right circumstances create an offer in DB
       // and under the right circumstances create a purchase
 
@@ -113,24 +110,22 @@ router.post("/:id/offers", auth, async (req, res, next) => {
         // declare those above
         sellerId,
         buyerId,
-        offer,
         isSold: true,
+        offer,
       });
-      // console.log("newPurchase", newPurchase);
-      // updatedNft.purchaseId = newPurchase.id;
-      newPurchase.save();
+      updatedNft.purchaseId = newPurchase.id;
+      updatedNft.save();
       // I need to send a response to frontend
       res.send({
         // send the updated nft back to the frontend
         nft: updatedNft,
-        purchase: newPurchase,
         // set success on true
         success: true,
         // we dont send an error message back so error can be null
         error: null,
       });
     } else {
-      res.status(200).send({
+      res.status(400).send({
         nft: updatedNft, // `updatedNft` is actually not updated in this case!
         success: false,
         error: "the offer is not high enough",
