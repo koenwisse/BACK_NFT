@@ -100,10 +100,7 @@ router.post("/:id/offers", auth, async (req, res, next) => {
 
     // write if statements to decide when to create
     // AND because we need to check if offer >= price and we need to have a as a condition purchaseId is null which ensures that nft not sold yet
-    if (
-      offer >= price
-      //  && updatedNft.purchaseId === null
-    ) {
+    if (offer >= price && updatedNft.purchaseId === null) {
       // We need to validate first but under the right circumstances create an offer in DB
       // and under the right circumstances create a purchase
 
@@ -127,13 +124,19 @@ router.post("/:id/offers", auth, async (req, res, next) => {
         // set success on true
         success: true,
         // we dont send an error message back so error can be null
-        error: null,
+        error: `You have purchased NFT with ID ${nftId}`,
       });
     } else {
+      // TODO: change error to message and also change nw message
+      const message =
+        updatedNft.purchaseId === null
+          ? "the offer is not high enough"
+          : "this NFT is already sold";
       res.status(200).send({
         nft: updatedNft, // `updatedNft` is actually not updated in this case!
         success: false,
-        error: "the offer is not high enough",
+        error: message,
+        purchase: null,
       });
     }
   } catch (e) {
